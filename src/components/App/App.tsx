@@ -53,7 +53,12 @@ export default function App() {
         </button>
       </header>
       {isLoading && <Loader />}
-      {isError && <ErrorMessage />}
+      {isError && (
+        <ErrorMessage text="There was an error, please try again..." />
+      )}
+      {data !== undefined && data?.notes.length === 0 && (
+        <ErrorMessage text="No notes found" />
+      )}
       {data !== undefined && data?.notes.length > 0 && (
         <NoteList notes={data?.notes} topic={topic} page={page} />
       )}
