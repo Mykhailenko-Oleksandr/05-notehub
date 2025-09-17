@@ -5,9 +5,11 @@ import NoteForm from "../NoteForm/NoteForm";
 
 interface ModalProps {
   onClose: () => void;
+  topic: string;
+  page: number;
 }
 
-export default function Modal({ onClose }: ModalProps) {
+export default function Modal({ onClose, topic, page }: ModalProps) {
   const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -38,7 +40,7 @@ export default function Modal({ onClose }: ModalProps) {
       onClick={handleBackdropClick}
     >
       <div className={css.modal}>
-        <NoteForm onClose={onClose} />
+        <NoteForm onClose={onClose} topic={topic} page={page} />
       </div>
     </div>,
     document.body

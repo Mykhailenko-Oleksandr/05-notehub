@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note } from "../types/note";
+import type { FormData, Note } from "../types/note";
 
 interface ResponseAPI {
   notes: Note[];
@@ -12,29 +12,33 @@ interface OptionsAPI {
     page: number;
     perPage: number;
   };
-  headers: {
-    Authorization: string;
-  };
 }
 
+axios.defaults.baseURL = "https://notehub-public.goit.study/api";
+axios.defaults.headers.common["Authorization"] = `Bearer ${
+  import.meta.env.VITE_NOTEHUB_TOKEN
+}`;
+
 export async function fetchNotes(searchWord: string, page: number) {
-  const url: string = "https://notehub-public.goit.study/api/notes";
   const options: OptionsAPI = {
     params: {
       search: searchWord,
       page: page,
       perPage: 12,
     },
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
-    },
   };
 
-  const res = await axios.get<ResponseAPI>(url, options);
+  const res = await axios.get<ResponseAPI>("/notes", options);
 
   return res.data;
 }
 
-function createNote() {}
+export async function createNote(data: FormData) {
+  const res = await axios.post<Note>("/notes", data);
 
-function deleteNote() {}
+  return res.data;
+}
+
+export async function deleteNote(id: string) {
+  await axios.delete<Note>(`/notes/${id}`);
+}

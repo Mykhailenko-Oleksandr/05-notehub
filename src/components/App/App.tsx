@@ -2,15 +2,16 @@ import NoteList from "../NoteList/NoteList";
 import css from "./App.module.css";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "../../services/noteService";
-import type { Note } from "../../types/note";
 import { useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import SearchBox from "../SearchBox/SearchBox";
+import { useDebouncedCallback } from "use-debounce";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
-  const [notes, setNotes] = useState<Note[] | []>([]);
   const [topic, setTopic] = useState("");
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +19,6 @@ export default function App() {
   const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["notes", topic, page],
     queryFn: () => fetchNotes(topic, page),
-    // enabled: topic !== "",
     placeholderData: keepPreviousData,
   });
 
@@ -32,10 +32,15 @@ export default function App() {
     setIsModalOpen(false);
   }
 
+  const updateSearchWord = useDebouncedCallback(
+    (searchWord: string) => setTopic(searchWord),
+    500
+  );
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        {/* Компонент SearchBox */}
+        <SearchBox onChange={updateSearchWord} />
         {isSuccess && totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
@@ -50,9 +55,10 @@ export default function App() {
       {isLoading && <Loader />}
       {isError && <ErrorMessage />}
       {data !== undefined && data?.notes.length > 0 && (
-        <NoteList notes={data?.notes} />
+        <NoteList notes={data?.notes} topic={topic} page={page} />
       )}
-      {isModalOpen && <Modal onClose={closeModal} />}
+      {isModalOpen && <Modal onClose={closeModal} topic={topic} page={page} />}
+      <Toaster />
     </div>
   );
 }

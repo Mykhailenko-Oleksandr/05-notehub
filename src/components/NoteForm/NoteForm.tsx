@@ -1,15 +1,15 @@
 import { ErrorMessage, Field, Form, Formik, type FormikHelpers } from "formik";
 import css from "./NoteForm.module.css";
 import * as Yup from "yup";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
+import type { FormData } from "../../types/note";
+import toast from "react-hot-toast";
 
 interface NoteFormProps {
   onClose: () => void;
-}
-
-interface FormData {
-  title: string;
-  content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  topic: string;
+  page: number;
 }
 
 const defaultValues: FormData = {
@@ -29,13 +29,26 @@ const OrderSchema = Yup.object().shape({
     .required("Tag is required"),
 });
 
-export default function NoteForm({ onClose }: NoteFormProps) {
+export default function NoteForm({ onClose, topic, page }: NoteFormProps) {
+  const queryClient = useQueryClient();
+
+  const createNoteMutate = useMutation({
+    mutationFn: (data: FormData) => createNote(data),
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["notes", topic, page] });
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
+
   function handleSubmit(
     values: FormData,
     formikHelpers: FormikHelpers<FormData>
   ) {
-    console.log("values", values);
+    createNoteMutate.mutate(values);
     formikHelpers.resetForm();
+    onClose();
   }
 
   return (
