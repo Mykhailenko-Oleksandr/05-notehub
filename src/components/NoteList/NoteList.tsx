@@ -4,19 +4,17 @@ import css from "./NoteList.module.css";
 import { deleteNote } from "../../services/noteService";
 import toast from "react-hot-toast";
 
-interface NotesListProps {
+interface NoteListProps {
   notes: Note[];
-  topic: string;
-  page: number;
 }
 
-export default function NoteList({ notes, topic, page }: NotesListProps) {
+export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
   const deleteNoteMutate = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["notes", topic, page] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
     onError(error) {
       toast.error(error.message);

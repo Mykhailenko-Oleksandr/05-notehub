@@ -60,7 +60,7 @@ export default function App() {
         <ErrorMessage text="No notes found" />
       )}
       {data !== undefined && data?.notes.length > 0 && (
-        <NoteList notes={data?.notes} topic={topic} page={page} />
+        <NoteList notes={data?.notes} />
       )}
       {isModalOpen && <Modal onClose={closeModal} topic={topic} page={page} />}
       <Toaster />

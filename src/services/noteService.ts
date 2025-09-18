@@ -40,5 +40,6 @@ export async function createNote(data: FormData) {
 }
 
 export async function deleteNote(id: string) {
-  await axios.delete<Note>(`/notes/${id}`);
+  const res = await axios.delete<Note>(`/notes/${id}`);
+  return res.data;
 }
