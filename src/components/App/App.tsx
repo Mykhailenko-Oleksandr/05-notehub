@@ -10,6 +10,7 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import SearchBox from "../SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
 import { Toaster } from "react-hot-toast";
+import NoteForm from "../NoteForm/NoteForm";
 
 export default function App() {
   const [topic, setTopic] = useState("");
@@ -32,10 +33,10 @@ export default function App() {
     setIsModalOpen(false);
   }
 
-  const updateSearchWord = useDebouncedCallback(
-    (searchWord: string) => setTopic(searchWord),
-    500
-  );
+  const updateSearchWord = useDebouncedCallback((searchWord: string) => {
+    setTopic(searchWord);
+    setPage(1);
+  }, 500);
 
   return (
     <div className={css.app}>
@@ -62,7 +63,12 @@ export default function App() {
       {data !== undefined && data?.notes.length > 0 && (
         <NoteList notes={data?.notes} />
       )}
-      {isModalOpen && <Modal onClose={closeModal} topic={topic} page={page} />}
+      {isModalOpen && (
+        <Modal
+          onClose={closeModal}
+          children={<NoteForm onClose={closeModal} />}
+        />
+      )}
       <Toaster />
     </div>
   );

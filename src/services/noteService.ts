@@ -29,13 +29,11 @@ export async function fetchNotes(searchWord: string, page: number) {
   };
 
   const res = await axios.get<ResponseAPI>("/notes", options);
-
   return res.data;
 }
 
 export async function createNote(data: FormData) {
   const res = await axios.post<Note>("/notes", data);
-
   return res.data;
 }
 

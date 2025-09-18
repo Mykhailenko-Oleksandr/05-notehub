@@ -8,8 +8,6 @@ import toast from "react-hot-toast";
 
 interface NoteFormProps {
   onClose: () => void;
-  topic: string;
-  page: number;
 }
 
 const defaultValues: FormData = {
@@ -29,13 +27,13 @@ const OrderSchema = Yup.object().shape({
     .required("Tag is required"),
 });
 
-export default function NoteForm({ onClose, topic, page }: NoteFormProps) {
+export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
 
   const createNoteMutate = useMutation({
     mutationFn: (data: FormData) => createNote(data),
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["notes", topic, page] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       onClose();
     },
     onError(error) {
